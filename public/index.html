@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>game</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.dev.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>	
+	<link rel="stylesheet" href="index.css">
+	<link rel="stylesheet" href="room.css">
+	<script type="text/javascript" src="p5.min.js"></script>
+	<script type="text/javascript" src="jresponsive1.js"></script>
+	<script src="tgrba.js"></script>
+	
+</head>
+<body>
+	<div class="login-page">
+	
+		<div class="form">
+			<form class = "login-form" action="/login" method="POST">
+				<div>
+					<h1 style="color: white; font-size: 50px;">Slackers</h1>	
+				</div>
+				<input id="uname" name="username" type="text" placeholder="username" required/>
+				<input id = "pwd" name="password" type="password" placeholder="password" required/>
+				<button type="submit" id="login-button">Login</button>
+			</form>
+			<form action="/guest" method="POST">
+				<button type="submit" id="guest-button">Play as a guest</button>
+				<p class="message">Not Registed? <a href="#">Register</a></p>
+			</form>
+			<form class = "register-form" action="/register" method="POST">
+				<div>
+					<h1 style="color: white; font-size: 50px;">Slackers</h1>	
+				</div>
+					<input name="username" type="text" placeholder="username" required/>
+					<input name="password" type="text" placeholder="password" required/>
+					<button id="create-button">CREATE ACCOUNT</button>	
+					<p class="message">Already Registed? <a href="#">Login</a></p>
+			</form>
+		</div>
+   </div>
+
+</body>
+
+
+</html>
