@@ -58,7 +58,7 @@ body {
 
 }
 
-.form .register-form {
+.form #register-form {
     display: none;
 }
 

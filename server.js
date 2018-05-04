@@ -85,6 +85,8 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 var app=express();
 
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(session({secret: 'work hard',
 resave: true,
 saveUninitialized: false}));
@@ -175,14 +177,24 @@ app.get('/', function(req, res){
 
 });
 
-app.post('/login', urlencodedParser  ,function(req, res,next){
+/*
+app.post('/login', function (req, res) {
+  req.session.username = (req.session.username ? req.session.username : req.body.username);
+  res.json({status: 0});
+});
+*/
+app.post('/login',function(req, res){
+
   if (req.sessionID) {
-      console.log("post function");
+      //console.log("post function login");
+
       User.findOne({username: req.body.username}).then(function(result){
         if(result.username == req.body.username && result.password == req.body.password){
-           res.send('welcome, ' + req.body.username + ' , you password is ' + req.body.password + ' , session ID : '+ req.sessionID);
-        }else{
-          popup.alert({content: 'invalid username or password'});
+
+          res.send({username: req.body.username,
+            password: req.body.password});
+        }else{     
+           res.send({errorMsg: 'invalid username or password'});
         }
       });
   }else{
@@ -190,7 +202,7 @@ app.post('/login', urlencodedParser  ,function(req, res,next){
   }
 });
 
-app.post('/register',urlencodedParser,function(req,res){
+app.post('/register',function(req,res){
     if (req.sessionID) {
       console.log("post function");
       const user = new User({
@@ -202,10 +214,12 @@ app.post('/register',urlencodedParser,function(req,res){
 
       User.findOne({username: req.body.username}).then(function(result){
         if(result != null && result.username == req.body.username){
-          popup.alert({content: 'username is already taken'});
+          res.send({errorMsg: 'username is already taken'});
         }else{
           user.save().then(function(){
-            res.redirect('/');
+            res.send({username: req.body.username,
+              password: req.body.password,
+              msg: 'registeration success'});
           });
         }
       });
@@ -213,15 +227,6 @@ app.post('/register',urlencodedParser,function(req,res){
   }else{
     console.log("req.session is false");
   }
-});
-
-app.get('/guest',urlencodedParser,function(req,res){
-  if (req.sessionID) {
-    res.send("I am a guest");
-
-}else{
-  console.log("req.session is false");
-}
 });
 
 
