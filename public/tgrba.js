@@ -5,7 +5,6 @@ var room_name;
 const system_room_number=5;
 function setup() {
 
-    var content = [];
 
     
 
@@ -27,7 +26,10 @@ function setup() {
                     alert(data.errorMsg);
                 }else{
                     alert('Welcome : '+ data.username + ' your password is : ' + data.password);
-
+                    viewGuestRooms({
+                        username: data.username,
+                        type: 0
+                    });
                     // redirect to rooms
                 }
             },
@@ -63,7 +65,65 @@ function setup() {
         });
     });
 
- $( "#guest-button").click(function() {
+    $( "#guest-button").click(function(){
+        console.log("guest button");
+        viewGuestRooms({
+            username: "",
+            type: 1
+        });
+    });
+
+    $('#title-chat').click(function(){
+        console.log("title-chat clicked");
+        $('#chat-window').animate({height:"toggle",opacity: "toggle"},"slow");
+        $('#message').animate({height:"toggle",opacity: "toggle"},"slow");
+        $('#send').animate({height:"toggle",opacity: "toggle"},"slow");
+    });
+
+        // Make connection
+        var socket = io.connect();
+
+        // Query DOM
+        var message = document.getElementById('message'),
+            btn = document.getElementById('send'),
+            output = document.getElementById('output'),
+            feedback = document.getElementById('feedback');
+
+        // Emit events
+        btn.addEventListener('click', function(){
+                if(message.value != ""){
+                socket.emit('chat', {
+                    message: message.value,
+                    handle: "username"
+                });
+                message.value = "";
+            }
+        });
+
+        message.addEventListener('keypress', function(){
+            socket.emit('typing', "username");
+        })
+
+        // Listen for events
+        socket.on('chat', function(data){
+            feedback.innerHTML = '';
+            output.innerHTML += '<p><strong>' + "username" + ': </strong>' + data.message + '</p>';
+        });
+
+        socket.on('typing', function(data){
+            feedback.innerHTML = '<p><em>' + "username" + ' is typing a message...</em></p>';
+        });
+
+
+}
+
+function viewGuestRooms(data) {
+
+
+    console.log(data.username + ' ' + data.type);
+    
+    var content = [];
+
     $(".login-page").remove();
     // request to get the rooms
     $.getJSON('/rooms', function(data){ 
@@ -159,9 +219,7 @@ function setup() {
     
   });
 
-  });
-
-}
+  }
 function newDrawing(data){
     console.log("data at newDrawing: "+data);
     noStroke();

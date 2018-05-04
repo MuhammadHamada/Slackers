@@ -75,7 +75,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const userSchema = new Schema({
     username: String,
-    password: String
+    password: String,
+    coins: Number,
+    points: Number
 });
 
 const User = mongoose.model('user', userSchema);
@@ -89,7 +91,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(session({secret: 'work hard',
 resave: true,
-saveUninitialized: false}));
+saveUninitialized: true}));
 
 
 
@@ -187,6 +189,7 @@ app.post('/login',function(req, res){
 
   if (req.sessionID) {
       //console.log("post function login");
+      console.log(req.sessionID);
 
       User.findOne({username: req.body.username}).then(function(result){
         if(result.username == req.body.username && result.password == req.body.password){
@@ -207,7 +210,9 @@ app.post('/register',function(req,res){
       console.log("post function");
       const user = new User({
         username: req.body.username,
-        password: req.body.password
+        password: req.body.password,
+        coins: 0,
+        points: 0
       });
 
       console.log(user);
@@ -228,6 +233,26 @@ app.post('/register',function(req,res){
     console.log("req.session is false");
   }
 });
+
+// Socket setup & pass server
+var io = socket(server);
+io.on('connection', (socket) => {
+
+    console.log('made socket connection', socket.id);
+
+    // Handle chat event
+    socket.on('chat', function(data){
+        // console.log(data);
+        io.sockets.emit('chat', data);
+    });
+
+    // Handle typing event
+    socket.on('typing', function(data){
+        socket.broadcast.emit('typing', data);
+    });
+
+});
+
 
 
 
